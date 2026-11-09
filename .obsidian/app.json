@@ -1,0 +1,14 @@
+{
+  "useMarkdownLinks": false,
+  "newLinkFormat": "shortest",
+  "attachmentFolderPath": "wiki/raw/assets",
+  "newFileLocation": "folder",
+  "newFileFolderPath": "wiki/notes",
+  "alwaysUpdateLinks": true,
+  "showUnsupportedFiles": false,
+  "userIgnoreFilters": [
+    "/^projects\\/[^\\/]+\\//",
+    ".claude/",
+    ".git/"
+  ]
+}

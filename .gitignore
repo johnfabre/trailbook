@@ -1,0 +1,19 @@
+# project checkouts are their own git repos; only cards + registry tracked
+projects/*/
+!projects/*.md
+
+# local agent state
+.claude/settings.local.json
+.obsidian/workspace*.json
+.obsidian/cache
+.obsidian/plugins/*/data.json
+.trash/
+
+# workspace runtime state (unfiled-session list)
+.trailbook/
+
+# ad-hoc visual views for CLI sessions (skill present-cli) — scratch
+views/
+
+# project skills: generated links to tracked projects/ws_<name>.skill.md (tools/project-skill-link.sh)
+skills/ws-project-*/
