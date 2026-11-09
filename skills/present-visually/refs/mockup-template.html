@@ -1,0 +1,96 @@
+<!doctype html>
+<!--
+  MOCKUP TEMPLATE — copy to <task dir>/mockups/<screen>.html
+  - Annotate: add data-note="N" to an element + a matching <li data-for="N"> in the legend + an HTML comment NOTE N.
+  - Mark status: class="is-new" (green outline) / "is-changed" (amber outline); unmarked = existing.
+  - One <section class="state"> per state: default, loading, empty, error, success.
+  - Self-contained: no external CSS/JS/fonts.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MOCKUP — Screen name</title>
+<style>
+  :root { --bg:#f6f7f9; --fg:#1d232b; --muted:#5b6673; --card:#fff; --line:#d8dde3;
+          --new:#1f8a4c; --chg:#b7791f; --note:#5a3fd6; --accent:#2457c5; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:15px/1.5 system-ui, sans-serif; background:var(--bg); color:var(--fg); }
+  header.meta { padding:12px 20px; background:#1d232b; color:#fff; display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+  header.meta small { color:#b9c2cc; }
+  header.meta button { margin-left:auto; }
+  .layout { display:grid; grid-template-columns: 1fr 320px; gap:20px; padding:20px; }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+  .state { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:16px; margin-bottom:20px; }
+  .state > h2 { margin:0 0 12px; font-size:13px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); }
+  .legend { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:16px; align-self:start; position:sticky; top:20px; }
+  .legend h2 { margin:0 0 8px; font-size:15px; }
+  .legend ol { padding-left:0; list-style:none; margin:0; }
+  .legend li { display:flex; gap:8px; margin-bottom:10px; }
+  .legend .key { display:flex; gap:12px; font-size:13px; color:var(--muted); margin-bottom:12px; flex-wrap:wrap; }
+  .is-new { outline:2px dashed var(--new); outline-offset:3px; }
+  .is-changed { outline:2px dashed var(--chg); outline-offset:3px; }
+  [data-note] { position:relative; }
+  [data-note]::after { content:attr(data-note); position:absolute; top:-10px; right:-10px; width:22px; height:22px;
+    border-radius:50%; background:var(--note); color:#fff; font:700 12px/22px system-ui; text-align:center; }
+  .badge { flex:none; width:22px; height:22px; border-radius:50%; background:var(--note); color:#fff; font:700 12px/22px system-ui; text-align:center; }
+  body.hide-notes [data-note]::after, body.hide-notes .is-new, body.hide-notes .is-changed { content:none; outline:none; }
+  body.hide-notes .legend { display:none; }
+  body.hide-notes .layout { grid-template-columns:1fr; }
+  /* --- mock UI primitives --- */
+  .row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+  .btn { padding:8px 14px; border-radius:6px; border:1px solid var(--line); background:#fff; font:inherit; cursor:pointer; }
+  .btn.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
+  input, select { padding:8px 10px; border:1px solid #8a96a3; border-radius:6px; font:inherit; }
+  label { display:block; font-weight:600; margin-bottom:4px; }
+  table.mock { width:100%; border-collapse:collapse; }
+  table.mock th, table.mock td { text-align:left; padding:8px; border-bottom:1px solid var(--line); }
+  .error { color:#b42318; }
+</style>
+</head>
+<body>
+<header class="meta">
+  <strong>MOCKUP · Screen name</strong>
+  <small>project · task: work/&lt;project&gt;/&lt;date-slug&gt; · spec §N</small>
+  <button class="btn" onclick="document.body.classList.toggle('hide-notes')">Toggle annotations</button>
+</header>
+
+<div class="layout">
+  <main>
+    <section class="state" aria-label="Default state">
+      <h2>Default</h2>
+      <!-- NOTE 1: New export button; only visible to users with role=admin (spec §3.2). -->
+      <div class="row">
+        <h1 style="margin:0;font-size:22px">Invoices</h1>
+        <button class="btn primary is-new" data-note="1">Export CSV</button>
+      </div>
+      <!-- NOTE 2: Existing filter, gains "date range" option (changed). -->
+      <div class="row is-changed" data-note="2" style="margin:16px 0">
+        <div><label for="range">Date range</label>
+          <select id="range"><option>Last 30 days</option><option>This quarter</option><option>Custom…</option></select></div>
+      </div>
+      <table class="mock">
+        <thead><tr><th>Number</th><th>Customer</th><th>Total</th><th>Status</th></tr></thead>
+        <tbody><tr><td>INV-1042</td><td>Acme GmbH</td><td>€1,240.00</td><td>Paid</td></tr></tbody>
+      </table>
+    </section>
+
+    <section class="state" aria-label="Error state">
+      <h2>Error</h2>
+      <!-- NOTE 3: Error text announced via role="alert"; retry keeps the selected range. -->
+      <p class="error" role="alert" data-note="3">Export failed — the server didn't respond. <button class="btn">Retry</button></p>
+    </section>
+  </main>
+
+  <aside class="legend" aria-label="Annotations">
+    <h2>Annotations</h2>
+    <div class="key"><span style="color:var(--new)">▭ new</span><span style="color:var(--chg)">▭ changed</span><span>unmarked = existing</span></div>
+    <ol>
+      <li data-for="1"><span class="badge">1</span><span>New <b>Export CSV</b> button, admin only. Spec §3.2.</span></li>
+      <li data-for="2"><span class="badge">2</span><span>Filter gains date range. Default "Last 30 days".</span></li>
+      <li data-for="3"><span class="badge">3</span><span>Error uses <code>role="alert"</code>; retry keeps filters.</span></li>
+    </ol>
+  </aside>
+</div>
+</body>
+</html>
