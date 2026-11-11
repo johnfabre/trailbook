@@ -48,7 +48,7 @@ Goal: capture what an agent needs to know about a repo in a ≤ 40-line card, **
    - **Conflicts**: read the full bodies only of repo files that overlap a Trailbook workflow (dev flows, role agents) and compare with Trailbook's; list each real conflict (gates, loop limits, artifact paths, handoff, review/test duties). Repo wins each one. Additive repo rules need no row.
    - **Settings**: repo `permissions.deny` git-push rules → mirror into root `.claude/settings.json` deny list (plus `git -C * push …` variants). Never copy `allow`, `defaultMode`, or hooks.
    - Card: `skill: ws-project-<name>`; `Skills:` line points to it.
-   - `bash tools/project-skill-link.sh <name>` → exposes it as `skills/ws-project-<name>/SKILL.md` (gitignored symlink; restore re-creates it). Not listed in `skills/index.md` — the card's `skill:` field routes to it.
+   - `bash tools/project-skill-link.sh <name>` → exposes it as `.claude/skills/ws-project-<name>/SKILL.md` (gitignored symlink, or a copy on Windows; restore re-creates it). Not listed in `.claude/skills/index.md` — the card's `skill:` field routes to it.
    - Announce: `saved skill ws-project-<name> (new): … → projects/ws_<name>.skill.md`. Skill list picks it up next session; until then `dev-workflow` reads the file directly.
 
 4. **Registry line** in `projects/index.md` under right status heading:

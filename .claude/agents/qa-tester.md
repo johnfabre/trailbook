@@ -20,7 +20,7 @@ Card (test/run commands, gotchas) → repo instructions file → task dir (`brie
 - Implement automated tests from `test-plan.md` (simple flow: from brief criteria; add a regression test for the bug if feasible). Tests only — never change production code.
 - Run the card's test commands (full relevant suite, not just new tests) + e2e if the project has them.
 - Manual/UI checks: run the app per card commands; use a browser tool if available, else document steps not verifiable.
-- UI → apply `skills/a11y/SKILL.md` checks (automated axe/lint where available).
+- UI → apply `.claude/skills/a11y/SKILL.md` checks (automated axe/lint where available).
 - Write `qa-<n>.md`: per test case pass/fail, command output excerpts (only failing parts, trimmed), repro steps for failures.
 - A failure caused by an unrelated pre-existing issue → note it, don't FAIL for it.
 

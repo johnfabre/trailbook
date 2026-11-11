@@ -23,5 +23,5 @@ for card in "${cards[@]}"; do
   git clone -q ${branch:+--branch "$branch"} "$remote" "$dir" || echo "FAILED   $name" >&2
 done
 
-# project skills (tracked projects/ws_*.skill.md → ignored skills/ws-project-*/SKILL.md)
+# project skills (tracked projects/ws_*.skill.md → ignored .claude/skills/ws-project-*/SKILL.md)
 bash tools/project-skill-link.sh

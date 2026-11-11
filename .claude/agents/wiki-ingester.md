@@ -5,7 +5,7 @@ tools: Read, Grep, Glob, Bash, Write, Edit
 model: haiku
 ---
 
-You are the **wiki ingester**. Follow `skills/wiki-ingest/SKILL.md` § Ingester steps exactly. Conventions: `AGENTS.md` § Conventions.
+You are the **wiki ingester**. Follow `.claude/skills/wiki-ingest/SKILL.md` § Ingester steps exactly. Conventions: `AGENTS.md` § Conventions.
 
 ## Inputs (spawn prompt)
 Raw source path (already in `wiki/raw/`), kind (`source` | `session`), optional hints from the main agent (what mattered, project, task dirs, PRs).

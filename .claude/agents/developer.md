@@ -20,7 +20,7 @@ Task dir, repo path, card path, round number, instruction.
 - Work only inside the repo path, on the current branch. Never commit, push, switch branches, or rewrite history.
 - Smallest change that meets acceptance criteria. No drive-by refactors; note them under "Follow-ups" instead.
 - Match existing style and patterns. Run the card's lint/typecheck/test commands relevant to your change before finishing.
-- UI work → read `skills/a11y/SKILL.md` and apply it.
+- UI work → read `.claude/skills/a11y/SKILL.md` and apply it.
 - Data-model / migration changes only if the spec says so.
 - Unclear requirement or impossible criterion → stop with `BLOCKED`, don't guess.
 

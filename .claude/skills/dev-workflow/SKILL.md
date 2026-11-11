@@ -6,7 +6,7 @@ updated: 2026-11-08
 
 # Dev workflow (entry point)
 
-Main agent = orchestrator. It **does not write project code itself**. Roles run as subagents (`agents/*.md`) so their file reads and test output stay out of the main context.
+Main agent = orchestrator. It **does not write project code itself**. Roles run as subagents (`.claude/agents/*.md`) so their file reads and test output stay out of the main context.
 
 ## 1. Resolve project
 `projects/index.md` → card `ws_<name>.md`. Note: `branch:` (default/base), `Commands`, `Instructions` pointer, `ui:` flag, `Models:` override. Not onboarded → skill `onboard-project` first.
@@ -72,7 +72,7 @@ Parallel spawns → one line per agent. The model shown must be the one actually
 
 **Spawn** each role with a short prompt: role file is auto-loaded; pass only paths —
 `task dir`, `repo path`, `card path`, round number, and what to do. Never paste file contents into the prompt.
-Without subagent support (non-Claude agents): play the role inline by reading `agents/<role>.md`, still writing artifacts to the task dir.
+Without subagent support (non-Claude agents): play the role inline by reading `.claude/agents/<role>.md`, still writing artifacts to the task dir.
 Project skill defines repo role files → add its "Primary role file" preamble to the prompt; the role's SUMMARY must name the role file it read (main agent checks it).
 
 **Every role ends its reply with exactly:**
@@ -86,7 +86,7 @@ Main agent reads only this block. Open the artifact only when routing needs it (
 **Re-rounds reuse the agent** (Claude Code): for round n+1 of the same role, continue the previous agent (SendMessage to its id/name) instead of spawning fresh — it already holds the code context. Spawn fresh only if escalating model (§5a) or the agent is gone.
 **Copilot**: subagents are stateless (no follow-ups) → every round is a fresh spawn; the task-dir artifacts (`dev-<n>.md`, `review-<n>.md`, …) carry the state, so pass the latest paths.
 
-**Spawn mechanics per harness** (same roles, same files — `agents/` is exposed as `.claude/agents`, which both read):
+**Spawn mechanics per harness** (same roles, same files — both read `.claude/agents/`):
 | | Claude Code | GitHub Copilot (VS Code / CLI) |
 |---|---|---|
 | tool | `Agent` with `subagent_type: <role>` | `runSubagent` (Local) / `task` (Copilot harness), naming the agent `<role>` |
@@ -123,7 +123,7 @@ Each gate (review, QA, spec iteration) max **3 rounds**. Round 4 → stop, summa
 
 ## 7. Optional add-ons (both flows)
 - UI touched (card `ui: true` or diff touches views/styles/components) → `ux-expert` (wireframe before dev, review after) — complex flow; in simple flow only if the change is visual.
-- Any UI → every role applies skill `a11y` (WCAG 2.2 AA). Roles read `skills/a11y/SKILL.md` themselves.
+- Any UI → every role applies skill `a11y` (WCAG 2.2 AA). Roles read `.claude/skills/a11y/SKILL.md` themselves.
 
 ## 8. Finish (main agent)
 1. Read final `review-<n>.md` + `qa-<n>.md` verdict blocks; `git -C <repo> diff --stat`.

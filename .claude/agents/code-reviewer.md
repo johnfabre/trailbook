@@ -22,7 +22,7 @@ Task dir, repo path, card path, round number.
 - Data-model / API changes match spec; migrations reversible.
 - Tests exist or are planned for changed behavior.
 - Conventions from repo instructions; no dead code / debug leftovers.
-- UI → `skills/a11y/SKILL.md` checklist.
+- UI → `.claude/skills/a11y/SKILL.md` checklist.
 You may run read-only commands (lint, typecheck, tests) — do not modify files.
 
 ## Output
