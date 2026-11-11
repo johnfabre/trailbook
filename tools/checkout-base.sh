@@ -116,7 +116,7 @@ fi
 
 {
   echo "---"; echo "title: Rescue before checking out $base ($name)"; echo "type: rescue"; echo "project: $name"
-  echo "date: $(date -I)"; echo "status: needs-review"; echo "from: $from"; echo "flags: [${flags[*]}]"; echo "---"
+  echo "date: $(date +%Y-%m-%d)"; echo "status: needs-review"; echo "from: $from"; echo "flags: [${flags[*]}]"; echo "---"
   echo "**TL;DR:** couldn't switch \`$name\` to \`$base\` cleanly; leftovers were saved (${flags[*]:-none}) and the repo was moved to \`$base\`. Review and close the rescue PR(s)."
   echo; echo "## What happened"; printf '%s\n' "${log[@]}"
   echo; echo "## State before rescue"; echo '```'; head -40 "$bk/status.txt"; echo '```'
