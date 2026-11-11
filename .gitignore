@@ -16,4 +16,4 @@ projects/*/
 views/
 
 # project skills: generated links to tracked projects/ws_<name>.skill.md (tools/project-skill-link.sh)
-skills/ws-project-*/
+.claude/skills/ws-project-*/

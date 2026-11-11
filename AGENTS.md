@@ -1,11 +1,11 @@
 # AGENTS.md — Trailbook AI Workspace
 
 This folder is a persistent workspace for AI agents. It holds three things:
-**wiki/** (what we know), **projects/** (what we work on), **skills/** (how we do repeat work).
+**wiki/** (what we know), **projects/** (what we work on), **skills** (how we do repeat work, in `.claude/skills/`).
 Core goal: **cheap context**. Answer from small index/card files; never re-derive what is already written down.
 Wiki scope: **general personal knowledge** — any domain (tech, work, health, finance, books, hobbies, people…), not just code.
 
-`CLAUDE.md` is a symlink to this file. `.claude/skills` → `skills/`, `.claude/agents` → `agents/`.
+`CLAUDE.md` only imports this file (`@AGENTS.md`). Skills and subagents are real folders under `.claude/` — **no symlinks in the repo** (Windows checks them out as text files).
 Human viewer: the workspace root is an **Obsidian vault** (`.obsidian/` config tracked; repo checkouts hidden from it).
 
 ## Layout
@@ -18,16 +18,16 @@ wiki/raw/            immutable source documents (never edit); raw/sessions/ = ex
 wiki/{sources,decisions,entities,concepts,notes}/   LLM-owned pages (decisions = the whys)
 projects/index.md    project registry (1 line each)
 projects/ws_<name>.md   project card (≤ 40 lines)
-projects/ws_<name>.skill.md  project skill: maps repo's own AI files onto Trailbook (repo wins on conflict); exposed as gitignored link skills/ws-project-<name>/
+projects/ws_<name>.skill.md  project skill: maps repo's own AI files onto Trailbook (repo wins on conflict); exposed as gitignored link .claude/skills/ws-project-<name>/
 projects/<name>/     git checkout — always here, never elsewhere (gitignored, its own repo)
-skills/index.md      skill catalog (1 line each)
-skills/<name>/SKILL.md  skill body
-agents/<role>.md     subagents: dev-workflow roles + wiki-ingester
+.claude/skills/index.md         skill catalog (1 line each)
+.claude/skills/<name>/SKILL.md  skill body
+.claude/agents/<role>.md        subagents: dev-workflow roles + wiki-ingester
 work/index.md        registry of every task/plan (1 line each, with status)
 work/<project>/<date>-<slug>/   task artifacts: brief/spec/plan, review.md digest, mockups/, reviews, QA
 tools/wiki-lint.sh   mechanical lint (links, orphans, indexes); exit 0 = clean
 tools/projects-restore.sh   re-clone every registered project missing locally (new machine) + re-link project skills
-tools/project-skill-link.sh  link projects/ws_*.skill.md → skills/ws-project-*/SKILL.md
+tools/project-skill-link.sh  link projects/ws_*.skill.md → .claude/skills/ws-project-*/SKILL.md
 tools/session-extract.sh    session transcript → code-free markdown for ingest
 tools/trivial-gate.sh       size/risk gate for trivial-change (OK | PROMOTE)
 tools/checkout-base.sh      default branch + pull for a project; rescues leftovers/conflicts to a PR first
@@ -44,7 +44,7 @@ Differences are handled inside the skills: Copilot subagents are stateless (fres
 | Tier | What | When |
 |---|---|---|
 | T0 | this file | always loaded |
-| T1 | `wiki/index.md`, `projects/index.md`, `skills/index.md` | first stop for any lookup |
+| T1 | `wiki/index.md`, `projects/index.md`, `.claude/skills/index.md` | first stop for any lookup |
 | T2 | head of a card / page (`head -20`: frontmatter + TL;DR) | usually enough |
 | T3 | full wiki page or full skill | when T2 is not enough |
 | T4 | project repo files, `wiki/raw/` sources | only when doing real work on them |
@@ -71,7 +71,7 @@ Differences are handled inside the skills: Copilot subagents are stateless (fres
 | Presenting a plan, spec, design, review, comparison, or anything multi-part | skill `present-visually` (chunks, mermaid, tables, annotated HTML mockups) |
 | User is in a terminal ("I'm in CLI", "can't see mermaid") | skill `present-cli` — visuals to a vault `.md`, opened in Obsidian; sticky for the session |
 | "review / show the plan for <feature> in <project>" | `work/index.md` → task dir → skill `present-visually` §7 |
-| Task looks repeat-shaped | check `skills/index.md` before figuring it out from scratch |
+| Task looks repeat-shaped | check `.claude/skills/index.md` before figuring it out from scratch |
 | Just finished something worth reusing | skill `skill-create` |
 
 ## When to create a skill (agents do this proactively)
@@ -84,7 +84,7 @@ Create or update a skill when **all** hold:
 Not for one-offs, or things a project's own docs already cover (link those from the card instead).
 Write skills only **after** the task succeeds, from what actually worked. Prefer updating an existing skill over making a near-duplicate.
 Auto-create, but **never silently**: every new or updated skill must be announced to the user in the same reply:
-`saved skill <name> (new|updated): <what it does> → skills/<name>/SKILL.md`. User may veto → delete/revert it.
+`saved skill <name> (new|updated): <what it does> → .claude/skills/<name>/SKILL.md`. User may veto → delete/revert it.
 
 ## Conventions
 

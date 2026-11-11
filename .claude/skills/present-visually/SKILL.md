@@ -47,12 +47,12 @@ Default plan chunks: 1 overview · 2 what changes (table) · 3 how it flows (dia
 Mermaid hygiene: ≤ ~15 nodes per diagram (split otherwise), short labels, `<br/>` for second lines, no styling noise. Wiki-style links don't work inside mermaid — reference paths as text.
 
 ## 5. HTML mockups
-- Start from `skills/present-visually/refs/mockup-template.html`. One file per screen in `<task dir>/mockups/<screen>.html`; states (default/loading/empty/error) as sections in the same file.
+- Start from `.claude/skills/present-visually/refs/mockup-template.html`. One file per screen in `<task dir>/mockups/<screen>.html`; states (default/loading/empty/error) as sections in the same file.
 - Self-contained: inline CSS, no external requests. Realistic copy, not lorem ipsum.
 - Annotations: numbered badge on the element (`data-note="1"`) + matching entry in the side legend + `<!-- NOTE 1: … -->` in source. Toggle button hides them.
 - Mark what is **new** vs **existing** vs **changed** (template classes `.is-new`, `.is-changed`).
 - Show: `xdg-open <file>` (ask first) or tell the user the path; Obsidian can also open it.
-- Apply `skills/a11y/SKILL.md` in the mockup itself (labels, contrast, focus order noted).
+- Apply `.claude/skills/a11y/SKILL.md` in the mockup itself (labels, contrast, focus order noted).
 
 ## 6. Rendering
 - Chat: mermaid shows as code — keep diagrams small; say `rendered: open <task dir>/review.md in Obsidian` (Obsidian renders mermaid + tables).

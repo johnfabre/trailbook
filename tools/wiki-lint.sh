@@ -29,16 +29,16 @@ done < "$tmp/slugs"
 report "Orphans (no inbound links besides index)" "$tmp/orphans"
 
 : > "$tmp/skills"
-for d in skills/*/; do n=$(basename "$d"); case $n in ws-project-*) continue;; esac; grep -qF "($n/SKILL.md)" skills/index.md || echo "$n" >> "$tmp/skills"; done
-report "Skills missing from skills/index.md" "$tmp/skills"
+for d in .claude/skills/*/; do n=$(basename "$d"); case $n in ws-project-*) continue;; esac; grep -qF "($n/SKILL.md)" .claude/skills/index.md || echo "$n" >> "$tmp/skills"; done
+report "Skills missing from .claude/skills/index.md" "$tmp/skills"
 
 # project skills: tracked source must be exposed, card must point at it (fix: tools/project-skill-link.sh)
 : > "$tmp/pskills"
 for src in projects/ws_*.skill.md; do [ -e "$src" ] || continue; n=$(basename "$src" .skill.md); n=${n#ws_}
-  cmp -s "$src" "skills/ws-project-$n/SKILL.md" || echo "$src → skills/ws-project-$n/SKILL.md missing or stale" >> "$tmp/pskills"
+  cmp -s "$src" ".claude/skills/ws-project-$n/SKILL.md" || echo "$src → .claude/skills/ws-project-$n/SKILL.md missing or stale" >> "$tmp/pskills"
   grep -q "^skill: *ws-project-$n" "projects/ws_$n.md" 2>/dev/null || echo "projects/ws_$n.md lacks 'skill: ws-project-$n'" >> "$tmp/pskills"
 done
-for d in skills/ws-project-*/; do [ -d "$d" ] || continue; n=${d#skills/ws-project-}; n=${n%/}
+for d in .claude/skills/ws-project-*/; do [ -d "$d" ] || continue; n=${d#.claude/skills/ws-project-}; n=${n%/}
   [ -f "projects/ws_$n.skill.md" ] || echo "$d has no source projects/ws_$n.skill.md" >> "$tmp/pskills"; done
 report "Project skills out of sync" "$tmp/pskills"
 

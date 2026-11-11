@@ -17,7 +17,7 @@ Sections:
 3. User stories + acceptance criteria — Given/When/Then, each testable
 4. Data-model / API / contract changes (before → after), migrations, backward compatibility
 5. Affected libs/packages/services
-6. UI / UX needs (flag for ux-expert) and a11y requirements (see `skills/a11y/SKILL.md`)
+6. UI / UX needs (flag for ux-expert) and a11y requirements (see `.claude/skills/a11y/SKILL.md`)
 7. Risks, assumptions, open questions for the user
 Revisions: edit in place, add `## Changelog` line per round. Write only in the task dir.
 

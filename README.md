@@ -6,7 +6,7 @@ Open any AI agent (Claude Code, Codex, …) in this folder and it immediately kn
 
 - **what we know** → `wiki/`
 - **what we work on** → `projects/`
-- **how we do repeat work** → `skills/` and `agents/`
+- **how we do repeat work** → `.claude/skills/` and `.claude/agents/`
 
 ---
 
@@ -29,7 +29,7 @@ Agents must stop at the first tier that answers the question:
 | Tier | What | Typical size |
 |---|---|---|
 | T0 | `AGENTS.md` — rules + router (always loaded) | ~110 lines |
-| T1 | `wiki/index.md`, `projects/index.md`, `skills/index.md` — one line per item | tiny |
+| T1 | `wiki/index.md`, `projects/index.md`, `.claude/skills/index.md` — one line per item | tiny |
 | T2 | Head of a page or card (frontmatter + TL;DR) | ~20 lines |
 | T3 | Full wiki page or full skill | small |
 | T4 | Project source code, raw source documents | large — only for real work |
@@ -59,7 +59,7 @@ Subagents keep heavy work (file reads, test output) out of the main session; eac
 ```
 trailbook/
 ├── README.md                 this file (for humans)
-├── AGENTS.md                 rules + router (for agents); CLAUDE.md is a symlink to it
+├── AGENTS.md                 rules + router (for agents); CLAUDE.md just imports it (@AGENTS.md)
 ├── log.md                    append-only log of every workspace operation
 │
 ├── wiki/                     general personal knowledge base (Obsidian-compatible)
@@ -76,12 +76,14 @@ trailbook/
 │   ├── ws_<name>.md          project card (≤ 40 lines) — tracked in git
 │   └── <name>/               the actual git checkout — gitignored
 │
-├── skills/                   reusable procedures (exposed to Claude Code via .claude/skills)
-│   ├── index.md
-│   ├── _template.md
-│   └── <name>/SKILL.md
+├── .claude/
+│   ├── skills/               reusable procedures — real folder, read by Claude Code, Copilot, Cursor
+│   │   ├── index.md
+│   │   ├── _template.md
+│   │   └── <name>/SKILL.md
+│   ├── agents/               dev-workflow subagent roles
+│   └── settings.json         session hooks
 │
-├── agents/                   dev-workflow subagent roles (exposed via .claude/agents)
 ├── work/                     dev task artifacts: briefs, specs, reviews, QA reports
 ├── tools/                    helper scripts
 └── .obsidian/                vault config (wikilinks, attachments, hides project checkouts)
@@ -145,7 +147,7 @@ Skills are short, step-by-step procedures written from what *actually worked*. A
 
 Every new or updated skill is announced in the same reply — `saved skill <name> (new|updated): <what it does> → <path>` — and the user can veto it.
 
-Skills use the Claude Code `SKILL.md` format, so Claude Code discovers them automatically through the `.claude/skills` symlink. Other agents find them through `skills/index.md`.
+Skills use the Claude Code `SKILL.md` format, and live in `.claude/skills/` as a real folder (no symlinks, so a plain Windows clone works). Claude Code, GitHub Copilot and Cursor discover that folder natively; any other agent that reads `AGENTS.md` (Codex, Gemini CLI, …) finds them through `.claude/skills/index.md`.
 
 Current skills:
 
@@ -156,7 +158,7 @@ Current skills:
 
 ### 4. Dev workflow — how code changes get made
 
-**Any development work in a project must start with the `dev-workflow` skill** (enforced in `AGENTS.md`). The main agent becomes an **orchestrator**: it never writes project code itself. Work is done by role-based subagents defined in `agents/`, so their file reads and test output stay out of the main session.
+**Any development work in a project must start with the `dev-workflow` skill** (enforced in `AGENTS.md`). The main agent becomes an **orchestrator**: it never writes project code itself. Work is done by role-based subagents defined in `.claude/agents/`, so their file reads and test output stay out of the main session.
 
 | Role | Does | Writes |
 |---|---|---|
@@ -256,9 +258,9 @@ Trailbook is built so both agents get the same behavior from the same files — 
 
 | Piece | Claude Code | GitHub Copilot (VS Code agent mode / CLI) |
 |---|---|---|
-| Rules + router | `CLAUDE.md` → `AGENTS.md` | `AGENTS.md` |
-| Skills | `.claude/skills/` → `skills/` | same folder (Copilot reads `.claude/skills/`) |
-| Subagents | `.claude/agents/` → `agents/` | same folder (Copilot reads Claude-format agents and maps tools and `haiku`/`sonnet`/`opus`) |
+| Rules + router | `CLAUDE.md` (one line: `@AGENTS.md`) | `AGENTS.md` |
+| Skills | `.claude/skills/` | same folder (Copilot reads `.claude/skills/`) |
+| Subagents | `.claude/agents/` | same folder (Copilot reads Claude-format agents and maps tools and `haiku`/`sonnet`/`opus`) |
 | Per-step model routing | `model` on each spawn | explicit model on `runSubagent`, else the agent file's `model:` |
 | Hooks | `.claude/settings.json` | same file (Copilot reads it; PascalCase events get the same snake_case fields) |
 | Session transcript → wiki | Claude Code transcripts | VS Code Copilot chat sessions (auto-detected by `tools/session-extract.sh`) |
@@ -271,7 +273,7 @@ Known differences, handled in the skills:
 
 ### Requirements
 
-`git` and `bash` — nothing to install beyond Git itself: no Python, no `jq`, no Node. On Windows that means plain **Git for Windows (Git Bash)**, which is enough on a locked-down enterprise machine; WSL works too. The scripts use only what ships with Git Bash, macOS and Linux (coreutils, `grep`, `sed`, and core `perl` for `tools/session-extract.sh`). Hooks are **fail-safe**: if a tool is missing, the folder is opened from a subdirectory, or anything goes wrong, they exit silently and never block a session — the agent still gives the filing reminder from `AGENTS.md`. No absolute paths are tracked, so a fork works on any machine.
+`git` and `bash` — nothing to install beyond Git itself: no Python, no `jq`, no Node. On Windows that means plain **Git for Windows (Git Bash)**, which is enough on a locked-down enterprise machine; WSL works too. The repo contains **no symlinks**, so it clones correctly without Developer Mode or admin rights. The scripts use only what ships with Git Bash, macOS and Linux (coreutils, `grep`, `sed`, and core `perl` for `tools/session-extract.sh`). Hooks are **fail-safe**: if a tool is missing, the folder is opened from a subdirectory, or anything goes wrong, they exit silently and never block a session — the agent still gives the filing reminder from `AGENTS.md`. No absolute paths are tracked, so a fork works on any machine.
 
 ## Getting started
 
@@ -318,7 +320,7 @@ Browse the knowledge base in **Obsidian** by opening your workspace folder as a 
 
 ## What has been built so far
 
-- **Workspace scaffold:** `AGENTS.md` (with `CLAUDE.md` symlink), the wiki/projects/skills/agents/work/tools layout, append-only `log.md`, and git with project checkouts ignored.
+- **Workspace scaffold:** `AGENTS.md` (imported by a one-line `CLAUDE.md`), the wiki/projects/skills/agents/work/tools layout, append-only `log.md`, and git with project checkouts ignored.
 - **Wiki:** seeded by ingesting the LLM Wiki idea file — one source page, one concept page, two entity pages (Obsidian, qmd).
 - **Projects:** registry, card template, cheap-probe onboarding, staleness refresh, and a restore script tested end to end. No real project onboarded yet.
 - **Skills:** five workspace skills plus four dev-workflow skills, all indexed and auto-discoverable by Claude Code.
