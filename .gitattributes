@@ -1,0 +1,4 @@
+# Always check out with LF, even on Windows (Git for Windows defaults to core.autocrlf=true):
+# CRLF breaks the bash scripts in tools/ and the frontmatter / index parsing they do on .md files.
+* text=auto eol=lf
+*.sh text eol=lf

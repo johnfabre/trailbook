@@ -32,6 +32,7 @@ tools/session-extract.sh    session transcript → code-free markdown for ingest
 tools/trivial-gate.sh       size/risk gate for trivial-change (OK | PROMOTE)
 tools/checkout-base.sh      default branch + pull for a project; rescues leftovers/conflicts to a PR first
 tools/session-hook.sh       SessionStart/End hook: filing reminder + unfiled-session tracking (.claude/settings.json)
+tools/obsidian-open.sh      open a vault file in Obsidian (obsidian:// URI; Linux/macOS/Windows)
 ```
 
 ## Harnesses (Claude Code and GitHub Copilot, like-for-like)
@@ -127,6 +128,7 @@ Append to `log.md`, newest at bottom, one heading per operation:
 - **Announce every subagent spawn** (any task, not just dev work) to the user *before* the call, one line:
   `🤖 spawning <role> — <what it will do> — model <model>/<effort>` (re-rounds: `🔁 resuming <role> r<n> — …`; escalation: `⬆️ escalating <role> <old> → <new> — <why>`).
 - Any create / rename / delete of a page, card, or skill → update its index in the same step.
+- **Tools need only git + bash**: scripts in `tools/` and commands in skills may use what ships with Git for Windows, macOS and Linux (coreutils, grep, sed, awk, perl core) — never python, jq, node or anything that must be installed.
 - Keep this file under ~150 lines. Move long procedures into skills.
 - Workspace is a git repo. Tracked: everything except `projects/*/` checkouts. Projects stay registered via cards (remote + branch), so `tools/projects-restore.sh` rebuilds them.
 - Commit the workspace repo only when the user asks — **except session filing**: `session-close` always commits and pushes its own wiki/log changes (only those paths).

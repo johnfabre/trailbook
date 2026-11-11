@@ -271,7 +271,7 @@ Known differences, handled in the skills:
 
 ### Requirements
 
-`git`, `bash`, `python3`, `jq` (macOS / Linux; on Windows use WSL or Git Bash). Hooks are **fail-safe**: if a tool is missing, the folder is opened from a subdirectory, or anything goes wrong, they exit silently and never block a session — the agent still gives the filing reminder from `AGENTS.md`. No absolute paths are tracked, so a fork works on any machine.
+`git` and `bash` — nothing to install beyond Git itself: no Python, no `jq`, no Node. On Windows that means plain **Git for Windows (Git Bash)**, which is enough on a locked-down enterprise machine; WSL works too. The scripts use only what ships with Git Bash, macOS and Linux (coreutils, `grep`, `sed`, and core `perl` for `tools/session-extract.sh`). Hooks are **fail-safe**: if a tool is missing, the folder is opened from a subdirectory, or anything goes wrong, they exit silently and never block a session — the agent still gives the filing reminder from `AGENTS.md`. No absolute paths are tracked, so a fork works on any machine.
 
 ## Getting started
 
@@ -311,6 +311,7 @@ Browse the knowledge base in **Obsidian** by opening your workspace folder as a 
 | `tools/trivial-gate.sh <repo> [files] [lines]` | Size/risk gate for trivial changes: `OK` or `PROMOTE` (too big, risky path, binary) |
 | `tools/checkout-base.sh <project> [base]` | Switch a project to its default branch and pull; if leftovers, conflicts, or local commits are in the way, save them (local backup, rescue branch + draft PR, note) first |
 | `tools/session-extract.sh [session-id] [-o file]` | Session transcript → compact, code-free markdown for ingest |
+| `tools/obsidian-open.sh <vault-relative path>` | Open a vault file in Obsidian via the `obsidian://` URI (Linux / macOS / Windows) |
 | `tools/session-hook.sh start\|end` | Claude Code hook: reminds you at session start that filing needs a deliberate "done"; flags sessions that ended unfiled |
 
 ---
