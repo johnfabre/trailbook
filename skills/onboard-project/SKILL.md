@@ -18,7 +18,7 @@ Goal: capture what an agent needs to know about a repo in a ≤ 40-line card, **
 1. **Get code**
    - URL → `git clone <url> projects/<name>`
    - User points at a local repo elsewhere → clone it into `projects/` using its `origin` URL (`git -C <path> remote get-url origin`); if it has no remote, ask the user before moving anything. Never register an outside path.
-   - Already in registry but folder missing → `tools/projects-restore.sh <name>`.
+   - Already in registry but folder missing → `node tools/projects-restore.mjs <name>`.
    - Already in registry and present → switch to *Refresh* below.
    - `remote:` must be a real cloneable URL — it is what keeps the project restorable after a fresh clone of the workspace.
 
@@ -48,7 +48,7 @@ Goal: capture what an agent needs to know about a repo in a ≤ 40-line card, **
    - **Conflicts**: read the full bodies only of repo files that overlap a Trailbook workflow (dev flows, role agents) and compare with Trailbook's; list each real conflict (gates, loop limits, artifact paths, handoff, review/test duties). Repo wins each one. Additive repo rules need no row.
    - **Settings**: repo `permissions.deny` git-push rules → mirror into root `.claude/settings.json` deny list (plus `git -C * push …` variants). Never copy `allow`, `defaultMode`, or hooks.
    - Card: `skill: ws-project-<name>`; `Skills:` line points to it.
-   - `bash tools/project-skill-link.sh <name>` → exposes it as `skills/ws-project-<name>/SKILL.md` (gitignored symlink; restore re-creates it). Not listed in `skills/index.md` — the card's `skill:` field routes to it.
+   - `node tools/project-skill-link.mjs <name>` → exposes it as `skills/ws-project-<name>/SKILL.md` (gitignored symlink; restore re-creates it). Not listed in `skills/index.md` — the card's `skill:` field routes to it.
    - Announce: `saved skill ws-project-<name> (new): … → projects/ws_<name>.skill.md`. Skill list picks it up next session; until then `dev-workflow` reads the file directly.
 
 4. **Registry line** in `projects/index.md` under right status heading:

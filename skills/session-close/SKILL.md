@@ -12,7 +12,7 @@ Goal: the wiki always knows what happened and **why**, without storing code, at 
 1. **Finish open work first**: anything mid-flight (uncommitted dev work, pending gates) → tell the user in one line what's left; don't block on it.
 2. **Extract** the transcript into a raw source (Claude Code):
    ```bash
-   tools/session-extract.sh <session-id> -o wiki/raw/sessions/<YYYY-MM-DD>-<slug>.md && chmod a-w wiki/raw/sessions/<YYYY-MM-DD>-<slug>.md
+   node tools/session-extract.mjs <session-id> -o wiki/raw/sessions/<YYYY-MM-DD>-<slug>.md && chmod a-w wiki/raw/sessions/<YYYY-MM-DD>-<slug>.md
    ```
    - `<session-id>`: Claude Code — the UUID in your scratchpad path. Copilot — omit it: the script picks the most recent transcript of this workspace (VS Code chat sessions are supported).
    - `<slug>`: 2–4 words naming the session's main topic.

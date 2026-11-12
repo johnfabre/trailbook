@@ -104,7 +104,7 @@ A general personal knowledge base covering any domain: tech, work, health, finan
 
 **Ingest always runs in a subagent.** The main agent stores the raw source and spawns `wiki-ingester` on **haiku** (pennies per source). It moves to sonnet only for long, dense sources or when the ingester replies `ESCALATE`, and to opus only if sonnet escalates.
 
-**Every session feeds the wiki.** When you say the session is done ("done", "wrap up", "that's all"), `session-close` runs `tools/session-extract.sh`, which shrinks the transcript to user messages, assistant prose, and one-line action summaries (no code, no tool output, secrets redacted — a 2 MB transcript became ~30 KB). The ingester then files the session's decisions as `decision-` pages, so "why did we…?" questions are answered from a TL;DR.
+**Every session feeds the wiki.** When you say the session is done ("done", "wrap up", "that's all"), `session-close` runs `tools/session-extract.mjs`, which shrinks the transcript to user messages, assistant prose, and one-line action summaries (no code, no tool output, secrets redacted — a 2 MB transcript became ~30 KB). The ingester then files the session's decisions as `decision-` pages, so "why did we…?" questions are answered from a TL;DR.
 
 **You are reminded.** Filing needs a deliberate "done". A SessionStart hook shows this at the start of every session, the agent repeats it when a piece of work finishes, and a SessionEnd hook records any session that ended without filing so the next session offers to file it.
 
@@ -132,7 +132,7 @@ When the user mentions a project, the agent matches it by name or alias in the r
 
 ```bash
 git clone <trailbook-remote> trailbook && cd trailbook
-tools/projects-restore.sh        # re-clones every registered project from its card
+node tools/projects-restore.mjs        # re-clones every registered project from its card
 ```
 
 ### 3. Skills — how we do repeat work
@@ -168,7 +168,7 @@ Current skills:
 
 Each change is classified first:
 
-- **Trivial** — typo, rename, config value, copy text (≤ 2 files, ≤ 20 lines). The main agent edits inline; a mechanical diff gate (`tools/trivial-gate.sh`) and one cheap review promote it to simple on any doubt.
+- **Trivial** — typo, rename, config value, copy text (≤ 2 files, ≤ 20 lines). The main agent edits inline; a mechanical diff gate (`tools/trivial-gate.mjs`) and one cheap review promote it to simple on any doubt.
 - **Simple** — bug fix or small tweak in one library, no data-model or API change.
 - **Complex** — new feature, multiple libraries, data-model, migration, or public API change. When unsure, the agent picks complex.
 
@@ -220,7 +220,7 @@ Rules that keep it safe and cheap:
 - **Every spawn is announced** before it happens: `🤖 spawning <role> — <what it will do> — model <model>/<effort>` (plus `🔁 resuming` for re-rounds and `⬆️ escalating` for model upgrades).
 - **Re-rounds reuse the same agent**, so it doesn't re-read the code.
 - **Loop limit:** each review/QA/spec loop runs at most 3 rounds, then the agent stops and asks the user.
-- **Fresh base, branch, PR.** Every task starts from the project's default branch pulled to the latest (`tools/checkout-base.sh`), then a task branch. Nothing is ever committed or pushed to the default branch.
+- **Fresh base, branch, PR.** Every task starts from the project's default branch pulled to the latest (`tools/checkout-base.mjs`), then a task branch. Nothing is ever committed or pushed to the default branch.
 - **Nothing in the way is lost.** Leftover files, conflicts, or unpushed local commits are backed up, committed to a `rescue/…` branch with a draft PR, and noted in `work/` before the switch; the agent tells you and recommends a separate session when it looks serious.
 - **Only the main agent commits.** PRs are opened automatically; **merging requires the user's go-ahead.**
 - **Accessibility:** any UI change applies the `a11y` skill (WCAG 2.2 AA) in every role.
@@ -261,7 +261,7 @@ Trailbook is built so both agents get the same behavior from the same files — 
 | Subagents | `.claude/agents/` → `agents/` | same folder (Copilot reads Claude-format agents and maps tools and `haiku`/`sonnet`/`opus`) |
 | Per-step model routing | `model` on each spawn | explicit model on `runSubagent`, else the agent file's `model:` |
 | Hooks | `.claude/settings.json` | same file (Copilot reads it; PascalCase events get the same snake_case fields) |
-| Session transcript → wiki | Claude Code transcripts | VS Code Copilot chat sessions (auto-detected by `tools/session-extract.sh`) |
+| Session transcript → wiki | Claude Code transcripts | VS Code Copilot chat sessions (auto-detected by `tools/session-extract.mjs`) |
 
 Known differences, handled in the skills:
 - **Copilot subagents are stateless**, so review/QA re-rounds start a fresh agent with the latest task-dir files instead of continuing the previous one.
@@ -271,7 +271,7 @@ Known differences, handled in the skills:
 
 ### Requirements
 
-`git` and `bash` — nothing to install beyond Git itself: no Python, no `jq`, no Node. On Windows that means plain **Git for Windows (Git Bash)**, which is enough on a locked-down enterprise machine; WSL works too. The scripts use only what ships with Git Bash, macOS and Linux (coreutils, `grep`, `sed`, and core `perl` for `tools/session-extract.sh`). Hooks are **fail-safe**: if a tool is missing, the folder is opened from a subdirectory, or anything goes wrong, they exit silently and never block a session — the agent still gives the filing reminder from `AGENTS.md`. No absolute paths are tracked, so a fork works on any machine.
+`git`, plus **Node ≥ 18 (recommended)** or plain `bash`. Every tool ships twice with identical behaviour and output: `tools/<name>.mjs` — zero-dependency Node (built-ins only, no `npm install`), a single process per run, which is what keeps tooling fast on Windows where every process a bash script forks is expensive — and `tools/<name>.sh`, the fallback that needs nothing beyond Git itself (no Python, no `jq`, no Node): on a locked-down enterprise machine plain **Git for Windows (Git Bash)** is enough; WSL works too. The `.sh` twins use only what ships with Git Bash, macOS and Linux (coreutils, `grep`, `sed`, and core `perl` for `tools/session-extract.sh`). Agents run `node tools/<name>.mjs`, or `bash tools/<name>.sh` when `node` is not on the PATH; the hooks pick automatically. Hooks are **fail-safe**: if a tool is missing, the folder is opened from a subdirectory, or anything goes wrong, they exit silently and never block a session — the agent still gives the filing reminder from `AGENTS.md`. No absolute paths are tracked, so a fork works on any machine.
 
 ## Getting started
 
@@ -295,7 +295,7 @@ Start your agent in the workspace root (`cd my-trailbook && claude`). Then just 
 | "Read this article: <url>" | `wiki-ingest`: raw copy, summary, linked pages, index, log |
 | "What do we know about Postgres RLS?" | `wiki-query`: answer from the wiki with citations |
 | "Review the plan for CSV export in billing" | `work/index.md` → task → chunked visual review (`present-visually`) |
-| "Health-check the wiki" | `wiki-lint` + `tools/wiki-lint.sh` |
+| "Health-check the wiki" | `wiki-lint` + `tools/wiki-lint.mjs` |
 | "What did we do recently?" | reads the tail of `log.md` |
 | "Why did we pick X?" | `wiki-query` → `## Decisions` in the index → TL;DR |
 | "Done for today" | `session-close`: transcript → haiku ingester → decisions + learnings in the wiki |
@@ -304,15 +304,18 @@ Browse the knowledge base in **Obsidian** by opening your workspace folder as a 
 
 ### Tools
 
+Each script exists as `.mjs` (Node, primary) and `.sh` (bash fallback) — same arguments, same output. `tools/_lib.mjs` holds the helpers the `.mjs` scripts share.
+
 | Script | Purpose |
 |---|---|
-| `tools/wiki-lint.sh` | Mechanical lint: broken links, unindexed pages, orphans, missing TL;DRs, unindexed skills/cards. Exit 0 = clean |
-| `tools/projects-restore.sh [name…]` | Re-clone registered projects whose checkout is missing |
-| `tools/trivial-gate.sh <repo> [files] [lines]` | Size/risk gate for trivial changes: `OK` or `PROMOTE` (too big, risky path, binary) |
-| `tools/checkout-base.sh <project> [base]` | Switch a project to its default branch and pull; if leftovers, conflicts, or local commits are in the way, save them (local backup, rescue branch + draft PR, note) first |
-| `tools/session-extract.sh [session-id] [-o file]` | Session transcript → compact, code-free markdown for ingest |
-| `tools/obsidian-open.sh <vault-relative path>` | Open a vault file in Obsidian via the `obsidian://` URI (Linux / macOS / Windows) |
-| `tools/session-hook.sh start\|end` | Claude Code hook: reminds you at session start that filing needs a deliberate "done"; flags sessions that ended unfiled |
+| `tools/wiki-lint.mjs` | Mechanical lint: broken links, unindexed pages, orphans, missing TL;DRs, unindexed skills/cards. Exit 0 = clean |
+| `tools/projects-restore.mjs [name…]` | Re-clone registered projects whose checkout is missing |
+| `tools/project-skill-link.mjs [name…]` | Expose tracked project skills (`projects/ws_<name>.skill.md`) to the harness as `skills/ws-project-<name>/` (symlink, or copy where symlinks are unavailable) |
+| `tools/trivial-gate.mjs <repo> [files] [lines]` | Size/risk gate for trivial changes: `OK` or `PROMOTE` (too big, risky path, binary) |
+| `tools/checkout-base.mjs <project> [base]` | Switch a project to its default branch and pull; if leftovers, conflicts, or local commits are in the way, save them (local backup, rescue branch + draft PR, note) first |
+| `tools/session-extract.mjs [session-id] [-o file]` | Session transcript → compact, code-free markdown for ingest |
+| `tools/obsidian-open.mjs <vault-relative path>` | Open a vault file in Obsidian via the `obsidian://` URI (Linux / macOS / Windows) |
+| `tools/session-hook.mjs start\|stop\|end` | Session hook (Claude Code + Copilot): reminds you at session start that filing needs a deliberate "done"; flags sessions that ended unfiled |
 
 ---
 
@@ -324,7 +327,7 @@ Browse the knowledge base in **Obsidian** by opening your workspace folder as a 
 - **Skills:** five workspace skills plus four dev-workflow skills, all indexed and auto-discoverable by Claude Code.
 - **Dev workflow:** five role subagents, simple and complex flows, a handoff protocol, loop limits, user gates, an accessibility checklist, and per-step model routing.
 - **Obsidian:** vault config with wikilinks, attachment folder, and project checkouts hidden.
-- **Quality:** `tools/wiki-lint.sh` passes clean and was verified against a deliberately broken page.
+- **Quality:** `tools/wiki-lint.mjs` passes clean and was verified against a deliberately broken page. Each `.mjs` tool was checked against its `.sh` twin for identical output.
 
 ## Not done yet / next steps
 

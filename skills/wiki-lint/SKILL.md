@@ -9,7 +9,7 @@ updated: 2026-11-08
 ## Mechanical checks (run first, cheap)
 
 ```bash
-tools/wiki-lint.sh     # exit 0 = clean; else prints sections per problem
+node tools/wiki-lint.mjs     # exit 0 = clean; else prints sections per problem
 ```
 Checks: broken `[[links]]`, pages missing from `wiki/index.md`, orphans, skills/cards missing from their index, pages without frontmatter/TL;DR.
 New mechanical check worth automating → add it to the script, not here.

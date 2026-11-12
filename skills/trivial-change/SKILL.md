@@ -27,7 +27,7 @@ brief(short) → main edits → trivial-gate ─PROMOTE→ simple-change (keep d
 1. **Announce**: `→ trivial-change: <why>` (user may override → simple-change).
 2. **Task dir** (lean): `brief.md` ≤ 10 lines (request, file(s), acceptance criterion) + `status.md`; line in `work/index.md`.
 3. **Edit** inline: read only the target region, make the change.
-4. **Gate** (mechanical, ~0 tokens): `tools/trivial-gate.sh projects/<name>` → read last 3 lines.
+4. **Gate** (mechanical, ~0 tokens): `node tools/trivial-gate.mjs projects/<name>` → read last 3 lines.
    `PROMOTE` → step 7. `OK` → continue.
 5. **Fast check**: card's cheapest relevant command (lint / single test / format check); read only the tail. Fail → step 7.
 6. **Review** — `🤖 spawning code-reviewer — check trivial diff vs brief — model haiku/low`.

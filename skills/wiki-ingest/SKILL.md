@@ -54,7 +54,7 @@ updated: 2026-11-08
 5. **Entity/concept pages**: add facts with `(from [[src-<slug>]])`; create only if central or likely to recur; `## Related` links both ways; bump `updated:`. Conflicts → `## Conflicts` with both sides cited, never overwrite.
 6. **Index**: lines in `wiki/index.md` under the right section for every page created or whose TL;DR changed.
 7. **Log**: `## [date] ingest | <title>` + pages touched.
-8. **Verify**: `tools/wiki-lint.sh` → clean (fix what you broke).
+8. **Verify**: `node tools/wiki-lint.mjs` → clean (fix what you broke).
 
 ## Pitfalls
 - No code in the wiki. Point to paths/PRs instead.
