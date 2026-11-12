@@ -19,9 +19,9 @@ Extends skill `present-visually` (load it too; all its rules hold). Only the **r
 2. **Write the whole thing** to that file: frontmatter (`title`, `based_on`, `based_on_updated`), then every chunk as `## <n> · <headline>` with its mermaid / tables. All chunks at once — the user scrolls in Obsidian; chat still goes chunk by chunk.
 3. **Open it in Obsidian** (trigger phrase = consent to open; don't ask again this session):
    ```bash
-   tools/obsidian-open.sh "<vault-relative path>"
+   node tools/obsidian-open.mjs "<vault-relative path>"
    ```
-   Pure bash (no python): URL-encodes vault + path and picks the opener per OS — `xdg-open` (Linux), `open` (macOS), `rundll32 url.dll,FileProtocolHandler` (Windows Git Bash / WSL). `--print` only prints the URI.
+   No `node`? → `bash tools/obsidian-open.sh` (same arguments). URL-encodes vault + path and picks the opener per OS — `xdg-open` (Linux), `open` (macOS), `rundll32 url.dll,FileProtocolHandler` (Windows Git Bash / WSL). `--print` only prints the URI.
    Already open in Obsidian → just rewrite the file; Obsidian live-reloads. Skip re-opening.
 4. **Chat side, per chunk**:
    - Headline + ≤ ~7 bullets / one small table. **No raw mermaid in chat** — instead `🖼 diagram: §<n> in Obsidian`.

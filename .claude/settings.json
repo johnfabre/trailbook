@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}/tools/session-hook.sh\" start 2>/dev/null || true",
+            "command": "H=\"${CLAUDE_PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}/tools/session-hook\"; if command -v node >/dev/null 2>&1; then node \"$H.mjs\" start; else bash \"$H.sh\" start; fi 2>/dev/null || true",
             "timeout": 10
           }
         ]
@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}/tools/session-hook.sh\" stop 2>/dev/null || true",
+            "command": "H=\"${CLAUDE_PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}/tools/session-hook\"; if command -v node >/dev/null 2>&1; then node \"$H.mjs\" stop; else bash \"$H.sh\" stop; fi 2>/dev/null || true",
             "timeout": 10
           }
         ]
@@ -27,7 +27,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}/tools/session-hook.sh\" end 2>/dev/null || true",
+            "command": "H=\"${CLAUDE_PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}/tools/session-hook\"; if command -v node >/dev/null 2>&1; then node \"$H.mjs\" end; else bash \"$H.sh\" end; fi 2>/dev/null || true",
             "timeout": 30
           }
         ]

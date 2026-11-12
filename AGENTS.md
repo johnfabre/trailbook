@@ -25,14 +25,15 @@ skills/<name>/SKILL.md  skill body
 agents/<role>.md     subagents: dev-workflow roles + wiki-ingester
 work/index.md        registry of every task/plan (1 line each, with status)
 work/<project>/<date>-<slug>/   task artifacts: brief/spec/plan, review.md digest, mockups/, reviews, QA
-tools/wiki-lint.sh   mechanical lint (links, orphans, indexes); exit 0 = clean
-tools/projects-restore.sh   re-clone every registered project missing locally (new machine) + re-link project skills
-tools/project-skill-link.sh  link projects/ws_*.skill.md → skills/ws-project-*/SKILL.md
-tools/session-extract.sh    session transcript → code-free markdown for ingest
-tools/trivial-gate.sh       size/risk gate for trivial-change (OK | PROMOTE)
-tools/checkout-base.sh      default branch + pull for a project; rescues leftovers/conflicts to a PR first
-tools/session-hook.sh       SessionStart/End hook: filing reminder + unfiled-session tracking (.claude/settings.json)
-tools/obsidian-open.sh      open a vault file in Obsidian (obsidian:// URI; Linux/macOS/Windows)
+tools/wiki-lint.mjs   mechanical lint (links, orphans, indexes); exit 0 = clean
+tools/projects-restore.mjs   re-clone every registered project missing locally (new machine) + re-link project skills
+tools/project-skill-link.mjs  link projects/ws_*.skill.md → skills/ws-project-*/SKILL.md
+tools/session-extract.mjs    session transcript → code-free markdown for ingest
+tools/trivial-gate.mjs       size/risk gate for trivial-change (OK | PROMOTE)
+tools/checkout-base.mjs      default branch + pull for a project; rescues leftovers/conflicts to a PR first
+tools/session-hook.mjs       SessionStart/End hook: filing reminder + unfiled-session tracking (.claude/settings.json)
+tools/obsidian-open.mjs      open a vault file in Obsidian (obsidian:// URI; Linux/macOS/Windows)
+tools/<name>.sh        bash twin of every tool above — fallback when node is missing; tools/_lib.mjs = shared helpers
 ```
 
 ## Harnesses (Claude Code and GitHub Copilot, like-for-like)
@@ -123,12 +124,12 @@ Append to `log.md`, newest at bottom, one heading per operation:
 - **Ingest always runs in a `wiki-ingester` subagent** — haiku by default; sonnet/opus only when the main agent judges it needed or the ingester returns `ESCALATE`. Main agent never writes ingest pages itself. No code in the wiki — decisions, whys, facts, pointers.
 - Never write into a project repo (`projects/<name>/`) unless the user asks for work in it.
 - Dev work always goes through `dev-workflow`: main agent orchestrates subagents, never codes directly (sole exception: `trivial-change`, gated + reviewed), only it commits; merge only on user go-ahead.
-- **Project git**: every dev task starts with `tools/checkout-base.sh <project>` — checkout of the default branch (card `branch:`, set at onboarding, user can change it anytime) **always followed by a pull**; anything in the way (leftover files, conflicts, local commits) is saved to a rescue branch + draft PR + note first, never lost — then a task branch. **Never commit or push to the default branch — always a PR.**
-- **Remind about filing**: the wiki updates only when the user ends the session deliberately. Say so once in your first reply of a session, and in one line whenever a unit of work finishes (task done, PR opened, plan approved): `📚 say "done" when you're finished so I file this session into the wiki`. A SessionStart hook (`tools/session-hook.sh`) also shows it, plus any earlier unfiled sessions.
+- **Project git**: every dev task starts with `node tools/checkout-base.mjs <project>` — checkout of the default branch (card `branch:`, set at onboarding, user can change it anytime) **always followed by a pull**; anything in the way (leftover files, conflicts, local commits) is saved to a rescue branch + draft PR + note first, never lost — then a task branch. **Never commit or push to the default branch — always a PR.**
+- **Remind about filing**: the wiki updates only when the user ends the session deliberately. Say so once in your first reply of a session, and in one line whenever a unit of work finishes (task done, PR opened, plan approved): `📚 say "done" when you're finished so I file this session into the wiki`. A SessionStart hook (`tools/session-hook.mjs`) also shows it, plus any earlier unfiled sessions.
 - **Announce every subagent spawn** (any task, not just dev work) to the user *before* the call, one line:
   `🤖 spawning <role> — <what it will do> — model <model>/<effort>` (re-rounds: `🔁 resuming <role> r<n> — …`; escalation: `⬆️ escalating <role> <old> → <new> — <why>`).
 - Any create / rename / delete of a page, card, or skill → update its index in the same step.
-- **Tools need only git + bash**: scripts in `tools/` and commands in skills may use what ships with Git for Windows, macOS and Linux (coreutils, grep, sed, awk, perl core) — never python, jq, node or anything that must be installed.
+- **Tools run on node, bash is the fallback**: every tool is a pair — `tools/<name>.mjs` (primary: one process, fast on Windows; Node ≥ 18 built-ins only, no npm packages) and `tools/<name>.sh` (same behaviour and output; needs only what ships with Git for Windows, macOS and Linux). Run `node tools/<name>.mjs …`; if `node` is missing, `bash tools/<name>.sh …` with the same arguments. Change one → change its twin in the same step (`wiki-lint` flags a missing twin). Never python, jq or anything else that must be installed.
 - Keep this file under ~150 lines. Move long procedures into skills.
-- Workspace is a git repo. Tracked: everything except `projects/*/` checkouts. Projects stay registered via cards (remote + branch), so `tools/projects-restore.sh` rebuilds them.
+- Workspace is a git repo. Tracked: everything except `projects/*/` checkouts. Projects stay registered via cards (remote + branch), so `tools/projects-restore.mjs` rebuilds them.
 - Commit the workspace repo only when the user asks — **except session filing**: `session-close` always commits and pushes its own wiki/log changes (only those paths).

@@ -22,7 +22,7 @@ Main agent = orchestrator. It **does not write project code itself**. Roles run 
 | | requirements need clarifying |
 
 **trivial** (typo, copy text, config value, local rename; ≤ 2 files, ≤ 20 lines, no logic) → skill `trivial-change`:
-main agent edits inline, `tools/trivial-gate.sh` + one haiku review, auto-promotes to simple-change on any doubt.
+main agent edits inline, `tools/trivial-gate.mjs` + one haiku review, auto-promotes to simple-change on any doubt.
 Unsure between classes → the bigger one. State choice to user in one line (`→ trivial-change: <why>`); user may override.
 Then load skill `trivial-change`, `simple-change`, or `complex-change`.
 
@@ -47,7 +47,7 @@ On creation add a line to `work/index.md`; update its status at every gate (appr
 ## 4. Git (in the project repo)
 **Every dev task starts from a fresh default branch** (`<base>` = card `branch:`; the user's choice wins over the remote's HEAD). Checkout is **always** followed by a pull — the script does both:
 ```bash
-tools/checkout-base.sh <name>                    # fetch → switch <base> → pull --ff-only; rescues anything in the way
+node tools/checkout-base.mjs <name>                    # fetch → switch <base> → pull --ff-only; rescues anything in the way
 git -C projects/<name> switch -c <fix|feat|chore>/<slug>     # exists already → ask: reuse or new name
 ```
 Read only the script's last 3 lines (`STATUS`, `NOTE`, `FLAGS`):

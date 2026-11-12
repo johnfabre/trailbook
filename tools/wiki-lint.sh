@@ -51,10 +51,16 @@ for d in work/*/*/; do [ -d "$d" ] || continue; t=${d#work/}; t=${t%/}; grep -qF
 report "Task dirs missing from work/index.md" "$tmp/tasks"
 
 : > "$tmp/nohead"
-find wiki -path wiki/raw -prune -o -name '*.md' ! -name index.md -print | while read -r f; do
+find wiki -path wiki/raw -prune -o -name '*.md' ! -name index.md -print | sort | while read -r f; do
   head -1 "$f" | grep -q '^---$' && grep -q '^\*\*TL;DR:\*\*' "$f" || echo "$f" >> "$tmp/nohead"
 done
 report "Pages without frontmatter or TL;DR" "$tmp/nohead"
+
+# every tool exists as a pair: tools/<name>.sh (bash fallback) + tools/<name>.mjs (node)
+: > "$tmp/twins"
+for f in tools/*.sh; do n=$(basename "$f" .sh); [ -f "tools/$n.mjs" ] || echo "tools/$n.sh has no tools/$n.mjs" >> "$tmp/twins"; done
+for f in tools/*.mjs; do n=$(basename "$f" .mjs); case $n in _*) continue;; esac; [ -f "tools/$n.sh" ] || echo "tools/$n.mjs has no tools/$n.sh" >> "$tmp/twins"; done
+report "Tools without a .sh/.mjs twin" "$tmp/twins"
 
 [ $rc -eq 0 ] && echo "lint: clean"
 exit $rc
