@@ -14,3 +14,7 @@ Append-only. Recent: `grep '^## \[' log.md | tail -10`
 - 8 new `tools/<name>.mjs` + shared `tools/_lib.mjs` (Node ≥ 18 built-ins, no npm): one process per run instead of dozens of forks; `.sh` kept as the no-node fallback, output verified identical
 - hooks (`.claude/settings.json`), skills, README and AGENTS.md now call `node tools/<name>.mjs`; hard rule changed from "git + bash only" to "node primary, bash fallback, keep twins in sync"
 - `wiki-lint` (both twins) flags a tool missing its twin; "no frontmatter" section now sorted
+
+## [2026-11-26] setup | repo-review add-on drafted as a gist (not installed here)
+- work/_workspace/2026-11-26-repo-review-gist/trailbook-repo-review.md: 13 files (skill + rubric + templates, 6 audit-* agents, repo-inventory + evidence-check twins)
+- tools tested twin-equal on 3 repos; install + self-test verified in a throwaway clone
