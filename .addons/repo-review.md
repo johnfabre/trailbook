@@ -3,7 +3,7 @@
 **Take-over due diligence for a repository: 6 agents, 4 phases, one rated report, verified evidence and doc-ready facts.**
 Drop-in for any Trailbook workspace (Claude Code and GitHub Copilot). Version 1.0 · 2026-11-26.
 
-> **TL;DR:** tell your Trailbook agent *"install the repo-review add-on from \<this gist's URL\>"*. Then say *"review \<project\>"*.
+> **TL;DR:** tell your Trailbook agent *"install the repo-review add-on"* (it ships in `.addons/`) or *"install the repo-review add-on from \<gist URL\>"* (shared copy). Then say *"review \<project\>"*.
 > You get a 1–5 scorecard covering **architecture** (repo structure & config), **code quality**, **business/functional** and **test meaningfulness**. Every finding is pinned to `path:line` at a fixed commit and machine-checked, and a `facts/` folder lets a later session write the documentation.
 
 ---
@@ -83,21 +83,25 @@ Facts are neutral (what *is*, never what *should be*), so a documentation sessio
 ## 5. Install
 
 **Human:** in your Trailbook workspace, tell your agent:
+> install the repo-review add-on
+
+or, for a shared copy published as a gist:
 > install the repo-review add-on from https://gist.github.com/&lt;user&gt;/&lt;id&gt;
 
 **Agent: follow these steps exactly, from the workspace root.**
 
 1. **Preconditions**: `AGENTS.md`, `skills/index.md`, `work/index.md` and `tools/_lib.mjs` must exist. If `tools/_lib.mjs` is missing, stop and tell the user their Trailbook predates the node tools and needs updating first.
-2. **Fetch this file unmodified** to `.trailbook/repo-review-gist.md` (`.trailbook/` is gitignored). Do not retype it.
+2. **Source file** (`$G` in the steps below; shell variables may not persist between tool calls, so set `G=` at the start of each command). Never retype it.
+   - Shipped with this Trailbook → `G=.addons/repo-review.md` (nothing to fetch).
+   - From a gist URL → fetch it unmodified into `.trailbook/` (gitignored) and use that path:
    ```bash
-   mkdir -p .trailbook
+   mkdir -p .trailbook; G=.trailbook/repo-review-gist.md
    curl -fsSL https://gist.githubusercontent.com/<user>/<id>/raw/trailbook-repo-review.md -o .trailbook/repo-review-gist.md
    # or: gh gist view <id> --raw --filename trailbook-repo-review.md > .trailbook/repo-review-gist.md
    # or: the user hands you the file; copy it there
    ```
 3. **Dry run**: list the targets and make sure none exist yet. If any exist, show the list and ask the user (overwrite = upgrade, see §7).
    ```bash
-   G=.trailbook/repo-review-gist.md
    grep -E '^~~~~[a-z]* file=' "$G" | sed 's/.* file=//'
    for f in $(grep -E '^~~~~[a-z]* file=' "$G" | sed 's/.* file=//'); do [ -e "$f" ] && echo "EXISTS $f"; done
    ```
@@ -109,7 +113,7 @@ Facts are neutral (what *is*, never what *should be*), so a documentation sessio
        d = f; if (sub(/\/[^\/]*$/, "", d)) system("mkdir -p \"" d "\""); next }
      /^~~~~$/ { if (f != "") close(f); f = ""; next }
      f != "" { print > f }
-   ' .trailbook/repo-review-gist.md
+   ' "$G"
    chmod +x tools/repo-inventory.mjs tools/repo-inventory.sh tools/evidence-check.mjs tools/evidence-check.sh
    ```
 5. **Wire it into the workspace** (small edits; if an anchor line differs in this workspace, put the line in the equivalent spot and tell the user):
@@ -148,9 +152,9 @@ Facts are neutral (what *is*, never what *should be*), so a documentation sessio
    inventory twins agree
    lint: clean
    ```
-7. **Clean up and record**: `rm .trailbook/repo-review-gist.md`. Append to `log.md`:
+7. **Clean up and record**: if you fetched a copy into `.trailbook/`, delete it (never delete `.addons/repo-review.md`). Append to `log.md`:
    ```
-   ## [YYYY-MM-DD] setup | repo-review add-on installed (gist v1.0)
+   ## [YYYY-MM-DD] setup | repo-review add-on installed (add-on v1.0)
    - skills/repo-review/{SKILL,rubric,templates}.md, agents/audit-*.md (6), tools/{repo-inventory,evidence-check}.{mjs,sh}
    - AGENTS.md (layout, router, log ops), skills/index.md, work/index.md format line
    ```
@@ -170,8 +174,8 @@ Facts are neutral (what *is*, never what *should be*), so a documentation sessio
 The main agent asks at most once for the exec policy and focus questions (defaults: `static`, none). It announces every spawn (`🤖 spawning audit-business — … — model sonnet/high`) and reads only the agents' STATUS blocks until the end, so its context stays small.
 
 ## 7. Upgrade / uninstall
-- **Upgrade**: steps 2–4 with the new gist version, after showing the user `diff` of each existing target vs the new block; then steps 6–8 (log `setup | repo-review add-on upgraded (vX)`).
-- **Uninstall**: delete `skills/repo-review/`, `agents/audit-*.md`, `tools/repo-inventory.*`, `tools/evidence-check.*`; revert the step-5 lines; run `node tools/wiki-lint.mjs`; log it. Existing `work/*/…-repo-review/` dirs are history: keep them.
+- **Upgrade**: steps 2–4 with the new add-on version, after showing the user `diff` of each existing target vs the new block; then steps 6–8 (log `setup | repo-review add-on upgraded (vX)`).
+- **Uninstall** (the `.addons/` file stays, so it can be reinstalled): delete `skills/repo-review/`, `agents/audit-*.md`, `tools/repo-inventory.*`, `tools/evidence-check.*`; revert the step-5 lines; run `node tools/wiki-lint.mjs`; log it. Existing `work/*/…-repo-review/` dirs are history: keep them.
 
 ---
 

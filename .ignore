@@ -1,0 +1,3 @@
+# Default search exclusions for ripgrep-based tools (Grep/Glob in Claude Code, VS Code search).
+# .addons/ is inert until the user asks for an add-on: read it by explicit path only (AGENTS.md hard rules).
+.addons/

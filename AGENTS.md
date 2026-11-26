@@ -23,6 +23,7 @@ projects/<name>/     git checkout — always here, never elsewhere (gitignored, 
 skills/index.md      skill catalog (1 line each)
 skills/<name>/SKILL.md  skill body
 agents/<role>.md     subagents: dev-workflow roles + wiki-ingester
+.addons/             optional add-ons: inert until the user asks (index.md). Never read otherwise
 work/index.md        registry of every task/plan (1 line each, with status)
 work/<project>/<date>-<slug>/   task artifacts: brief/spec/plan, review.md digest, mockups/, reviews, QA
 tools/wiki-lint.mjs   mechanical lint (links, orphans, indexes); exit 0 = clean
@@ -69,6 +70,7 @@ Differences are handled inside the skills: Copilot subagents are stateless (fres
 | "file unfiled sessions" | skill `session-close` § Unfiled sessions |
 | Knowledge or "why did we…" question | skill `wiki-query` (index → decisions/pages → answer with citations) |
 | "lint / health-check the wiki" | skill `wiki-lint` |
+| "list / install / upgrade / uninstall add-on X" | `.addons/index.md` → that add-on file's § Install (or § Upgrade / uninstall) |
 | Presenting a plan, spec, design, review, comparison, or anything multi-part | skill `present-visually` (chunks, mermaid, tables, annotated HTML mockups) |
 | User is in a terminal ("I'm in CLI", "can't see mermaid") | skill `present-cli` — visuals to a vault `.md`, opened in Obsidian; sticky for the session |
 | "review / show the plan for <feature> in <project>" | `work/index.md` → task dir → skill `present-visually` §7 |
@@ -128,6 +130,7 @@ Append to `log.md`, newest at bottom, one heading per operation:
 - **Remind about filing**: the wiki updates only when the user ends the session deliberately. Say so once in your first reply of a session, and in one line whenever a unit of work finishes (task done, PR opened, plan approved): `📚 say "done" when you're finished so I file this session into the wiki`. A SessionStart hook (`tools/session-hook.mjs`) also shows it, plus any earlier unfiled sessions.
 - **Announce every subagent spawn** (any task, not just dev work) to the user *before* the call, one line:
   `🤖 spawning <role> — <what it will do> — model <model>/<effort>` (re-rounds: `🔁 resuming <role> r<n> — …`; escalation: `⬆️ escalating <role> <old> → <new> — <why>`).
+- **`.addons/` is inert**: never read, search, load or apply it unless the user explicitly asks to list, install, upgrade, uninstall or run an add-on. Installed add-ons live in `skills/`, `agents/`, `tools/` like everything else.
 - Any create / rename / delete of a page, card, or skill → update its index in the same step.
 - **Tools run on node, bash is the fallback**: every tool is a pair — `tools/<name>.mjs` (primary: one process, fast on Windows; Node ≥ 18 built-ins only, no npm packages) and `tools/<name>.sh` (same behaviour and output; needs only what ships with Git for Windows, macOS and Linux). Run `node tools/<name>.mjs …`; if `node` is missing, `bash tools/<name>.sh …` with the same arguments. Change one → change its twin in the same step (`wiki-lint` flags a missing twin). Never python, jq or anything else that must be installed.
 - Keep this file under ~150 lines. Move long procedures into skills.
