@@ -18,3 +18,7 @@ Append-only. Recent: `grep '^## \[' log.md | tail -10`
 ## [2026-11-26] setup | repo-review add-on drafted as a gist (not installed here)
 - work/_workspace/2026-11-26-repo-review-gist/trailbook-repo-review.md: 13 files (skill + rubric + templates, 6 audit-* agents, repo-inventory + evidence-check twins)
 - tools tested twin-equal on 3 repos; install + self-test verified in a throwaway clone
+
+## [2026-11-26] setup | repo-review gist → .addons/ (inert add-ons folder)
+- .addons/repo-review.md (moved from work/_workspace/…; install source = local file or a gist URL), .addons/index.md
+- .ignore hides .addons/ from ripgrep searches; AGENTS.md: layout line, router row, hard rule (inert unless asked); README layout; work/index.md entry removed

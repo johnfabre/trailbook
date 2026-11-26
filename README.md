@@ -84,6 +84,7 @@ trailbook/
 ├── agents/                   dev-workflow subagent roles (exposed via .claude/agents)
 ├── work/                     dev task artifacts: briefs, specs, reviews, QA reports
 ├── tools/                    helper scripts
+├── .addons/                  optional add-ons (e.g. repo-review): inert until you ask to install one
 └── .obsidian/                vault config (wikilinks, attachments, hides project checkouts)
 ```
 
