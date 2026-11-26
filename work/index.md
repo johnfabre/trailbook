@@ -7,3 +7,4 @@ Status: `draft → awaiting-approval → approved → in-progress → pr-open �
 ## Open
 
 ## Done
+- _workspace · [2026-11-26-repo-review-gist](_workspace/2026-11-26-repo-review-gist/) — repo-review add-on as a shareable gist (6 audit agents, rubric, 2 tool pairs) · plan · done · doc: trailbook-repo-review.md · PR: —
